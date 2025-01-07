@@ -25,14 +25,17 @@ chmod 755 grab_packages.py
 
 ```
 [server]
+# paths to the repo which contains all the SLE repo
 url = https://download.suse.de/ibs
 paths = SUSE:/{product_name}:/Update/standard/src, SUSE:/{product_name}:/GA/standard/src 
 
-[store]
-path = /run/media/aginies/d9d43b59-ccd6-42b2-909d-efd1341db80c/suse/
-
 [files]
+# file which contains the pattern to match
 packages = packages.list
+
+[store]
+# base directory to store the src.rpm files, the product_names will also be used
+path = /run/media/aginies/d9d43b59-ccd6-42b2-909d-efd1341db80c/suse/
 
 [products]
 product_names = SLE-15-SP7, SLE-15-SP6, SLE-15-SP4, SLE-15-SP3, SLE-15-SP2, SLE-15-SP1, SLE-15, SLE-12-SP5
