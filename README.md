@@ -17,7 +17,7 @@ zypper in python3-tqdm
 chmod 755 grab_packages.py
 ./grab_packages.py
 ```
-![image]()
+![image](https://github.com/aginies/grab_packages/blob/298eb4d7c6916ce2030fa00aa79d5e4afa10d180/grab.jpg)
 
 # Configuration
 
