@@ -5,10 +5,10 @@ This will store the package in the product name directory, ie: **SLE-15-SP6**.
 
 # Python module needed
 
-**python3-tqdm**
+**python3-tqdm**, **python3-packaging**
 
 ```bash
-zypper in python3-tqdm
+zypper in python3-tqdm python3-packaging
 ```
 
 # How to use it
