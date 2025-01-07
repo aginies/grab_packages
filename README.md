@@ -27,6 +27,9 @@ chmod 755 grab_packages.py
 url = https://download.suse.de/ibs
 paths = SUSE:/{product_name}:/Update/standard/src, SUSE:/{product_name}:/GA/standard/src 
 
+[store]
+path = /run/media/aginies/d9d43b59-ccd6-42b2-909d-efd1341db80c/suse/
+
 [files]
 packages = packages.list
 

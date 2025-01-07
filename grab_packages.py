@@ -57,6 +57,7 @@ def grab_files(config):
         paths_template = config.get('server', 'paths')
         packages_file = config.get('files', 'packages')
         product_names = config.get('products', 'product_names').split(',')
+        store_path = config.get('store', 'path')
 
         # Read patterns from the packages_file
         with open(packages_file, 'r') as f:
@@ -73,7 +74,8 @@ def grab_files(config):
                 product_name = product_name.strip()
 
                 # Create directory for the product
-                os.makedirs(product_name, exist_ok=True)
+                product_dir = os.path.join(store_path, product_name)
+                os.makedirs(product_dir, exist_ok=True)
 
                 # Generate paths dynamically using product names and the template
                 paths = [p.strip().replace('{product_name}', product_name) for p in paths_template.split(',')]
@@ -99,7 +101,7 @@ def grab_files(config):
                                         file_url = url + '/' + file_name
 
                                         # Construct the file path with the product directory
-                                        file_path = os.path.join(product_name, file_name)
+                                        file_path = os.path.join(product_dir, file_name)
 
                                         # Check if the file already exists
                                         if os.path.exists(file_path):
