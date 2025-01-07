@@ -33,6 +33,7 @@ def download_file(file_url, file_path, thread_id):
                     progress_bar.update(len(data))
 
             progress_bar.close()
+            print(f"Thread {thread_id}: {file_name} - Downloaded")
 
             # Clear the screen after the download is complete
             os.system('cls' if os.name == 'nt' else 'clear')
