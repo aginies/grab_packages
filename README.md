@@ -17,6 +17,7 @@ zypper in python3-tqdm
 chmod 755 grab_packages.py
 ./grab_packages.py
 ```
+![image]()
 
 # Configuration
 

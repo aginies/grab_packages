@@ -19,9 +19,12 @@ def download_file(file_url, file_path, thread_id):
             file_size = int(response.info().get('Content-Length', 0))
             block_size = 8192
 
+            # Extract filename from file_path
+            file_name = os.path.basename(file_path)
+
             # Create a tqdm progress bar
             progress_bar = tqdm(total=file_size, unit='B', unit_scale=True,
-                                desc=f"Thread {thread_id}: {file_path}",
+                                desc=f"Thread {thread_id}: {file_name}",
                                 position=thread_id, leave=True)
 
             with open(file_path, 'wb') as out_file:
