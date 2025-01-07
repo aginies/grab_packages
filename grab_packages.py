@@ -9,6 +9,7 @@ import os
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
+from packaging import version
 
 def download_file(file_url, file_path, thread_id):
     """
@@ -96,25 +97,33 @@ def grab_files(config):
                         links = re.findall(r'<a href="([^"]+)"', html)
 
                         if links:
+                            latest_versions = {}  # Store latest versions of each package
                             for file_name in links:
                                 # Remove everything after '<' if it exists
                                 file_name = file_name.split('<')[0]
                                 # Check if the filename matches any pattern AND ends with "src.rpm"
                                 for pattern in patterns:
-                                    if pattern in file_name and file_name.endswith("src.rpm"):
-                                        file_url = url + '/' + file_name
+                                     if pattern in file_name and file_name.endswith("src.rpm"):
+                                        # Extract version from filename (assuming format like 'package-1.2.3-4.src.rpm')
+                                        version_str = re.search(r'-(.*?)-', file_name).group(1)
+                                        package_name = file_name.split('-')[0]
 
-                                        # Construct the file path with the product directory
-                                        file_path = os.path.join(product_dir, file_name)
+                                        # Check if this is the latest version of the package
+                                        if package_name not in latest_versions or version.parse(version_str) > version.parse(latest_versions[package_name][0]):
+                                            latest_versions[package_name] = (version_str, file_name)
 
-                                        # Check if the file already exists
-                                        if os.path.exists(file_path):
-                                            #print(f"File {file_name} already exists in {product_name}. Skipping download.")
-                                            continue  # Skip to the next file
+                            # Download only the latest versions
+                            for version_str, file_name in latest_versions.values():
+                                file_url = url + '/' + file_name
+                                file_path = os.path.join(product_dir, file_name)
 
-                                        #print(f"Attempting to download: {file_url}")
-                                        executor.submit(download_file, file_url, file_path, thread_id)
-                                        thread_id += 1  # Increment thread ID
+                                #if os.path.exists(file_path):
+                                #    print(f"File {file_name} already exists in {product_name}. Skipping download.")
+                                #    continue
+
+                                print(f"Attempting to download: {file_url}")
+                                executor.submit(download_file, file_url, file_path, thread_id)
+                                thread_id += 1  # Increment thread ID
 
                         else:
                             print("No matching files found on the server.")
