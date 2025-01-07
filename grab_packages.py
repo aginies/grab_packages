@@ -24,7 +24,7 @@ def download_file(file_url, file_path, thread_id):
 
             # Create a tqdm progress bar
             progress_bar = tqdm(total=file_size, unit='B', unit_scale=True,
-                                desc=f"Thread {thread_id}: {file_name}",
+                                desc=f"{file_name}",
                                 position=thread_id, leave=True)
 
             with open(file_path, 'wb') as out_file:
@@ -33,7 +33,7 @@ def download_file(file_url, file_path, thread_id):
                     progress_bar.update(len(data))
 
             progress_bar.close()
-            print(f"Thread {thread_id}: {file_name} - Downloaded")
+            #print(f"Thread {thread_id}: {file_name} - Downloaded")
 
             # Clear the screen after the download is complete
             os.system('cls' if os.name == 'nt' else 'clear')
