@@ -121,7 +121,7 @@ def grab_files(config):
                                 #    print(f"File {file_name} already exists in {product_name}. Skipping download.")
                                 #    continue
 
-                                print(f"Attempting to download: {file_url}")
+                                #print(f"Attempting to download: {file_url}")
                                 executor.submit(download_file, file_url, file_path, thread_id)
                                 thread_id += 1  # Increment thread ID
 
