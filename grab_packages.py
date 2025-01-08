@@ -31,16 +31,20 @@ def download_file(file_url, file_path, thread_id):
             with open(file_path, 'wb') as out_file:
                 for data in iter(lambda: response.read(block_size), b""):
                     out_file.write(data)
+                    out_file.flush()
                     progress_bar.update(len(data))
 
             progress_bar.close()
             #print(f"Thread {thread_id}: {file_name} - Downloaded")
 
-            # Clear the screen after the download is complete
-            os.system('cls' if os.name == 'nt' else 'clear')
+            os.system('clear')
 
     except urllib.error.HTTPError as e:
         print(f"Thread {thread_id}: Error downloading {file_url}: {e.code} - {e.reason}")
+    except (KeyboardInterrupt, Exception) as e:
+        print(f"Thread {thread_id}: Download interrupted. Attempting to save progress...")
+        out_file.flush()  # Try to save what's been downloaded so far
+        print(f"Thread {thread_id}: {type(e).__name__} occurred: {e}")
 
 def grab_files(config):
     """
@@ -69,7 +73,7 @@ def grab_files(config):
             patterns = [line.strip() for line in f]
 
         # Clear the screen at the beginning
-        os.system('cls' if os.name == 'nt' else 'clear')  
+        os.system('clear')
 
         # Create a ThreadPoolExecutor with a maximum of 5 worker threads
         with ThreadPoolExecutor(max_workers=5) as executor: 
