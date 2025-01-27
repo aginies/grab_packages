@@ -19,8 +19,6 @@ def download_file(file_url, file_path, thread_id):
         with urllib.request.urlopen(file_url, context=ssl.create_default_context()) as response:
             file_size = int(response.info().get('Content-Length', 0))
             block_size = 8192
-
-            # Extract filename from file_path
             file_name = os.path.basename(file_path)
 
             # Create a tqdm progress bar
@@ -43,7 +41,7 @@ def download_file(file_url, file_path, thread_id):
         print(f"Thread {thread_id}: Error downloading {file_url}: {e.code} - {e.reason}")
     except (KeyboardInterrupt, Exception) as e:
         print(f"Thread {thread_id}: Download interrupted. Attempting to save progress...")
-        out_file.flush()  # Try to save what's been downloaded so far
+        out_file.flush()
         print(f"Thread {thread_id}: {type(e).__name__} occurred: {e}")
 
 def grab_files(config):
@@ -64,6 +62,7 @@ def grab_files(config):
         # Read configuration
         server_url = config.get('server', 'url')
         paths_template = config.get('server', 'paths')
+        pathsSLFO_template = config.get('server', 'pathsSLFO')
         packages_file = config.get('files', 'packages')
         product_names = config.get('products', 'product_names').split(',')
         store_path = config.get('store', 'path')
@@ -76,11 +75,15 @@ def grab_files(config):
         os.system('clear')
 
         # Create a ThreadPoolExecutor with a maximum of 5 worker threads
-        with ThreadPoolExecutor(max_workers=5) as executor: 
+        with ThreadPoolExecutor(max_workers=5) as executor:
             thread_id = 1  # Initialize thread ID counter
 
             for product_name in product_names:
                 product_name = product_name.strip()
+
+                # Determine the correct path template based on product name
+                if not re.match(r'SLE-1[2-5]-SP\d+', product_name):
+                    paths_template = pathsSLFO_template
 
                 # Create directory for the product
                 product_dir = os.path.join(store_path, product_name)
@@ -121,9 +124,9 @@ def grab_files(config):
                                 file_url = url + '/' + file_name
                                 file_path = os.path.join(product_dir, file_name)
 
-                                #if os.path.exists(file_path):
-                                #    print(f"File {file_name} already exists in {product_name}. Skipping download.")
-                                #    continue
+                                if os.path.exists(file_path):
+                                    print(f"File {file_name} already exists in {product_name}. Skipping download.")
+                                    continue
 
                                 #print(f"Attempting to download: {file_url}")
                                 executor.submit(download_file, file_url, file_path, thread_id)
@@ -134,7 +137,7 @@ def grab_files(config):
 
                     except urllib.error.HTTPError as e:
                         if e.code == 404:
-                            print(f"HTTP Error 404 for path {path}: Not Found")  # Suppressed detailed log
+                            print(f"HTTP Error 404 for path {path}: Not Found")
                         else:
                             print(f"HTTP Error for path {path}: {e.code} - {e.reason}")
                             if hasattr(e, 'read'):
