@@ -1,15 +1,15 @@
 # Goal
 
-Grab all **src.rpm** packages which match the pattern listed in the file **package.list** for each wanted product.
-This will store the package in the product name directory, ie: **SLE-15-SP6**. This will grab the latest version 
-of the package in the **update** channel, and the initial package in **GA**.
+Grab all **src.rpm** packages which match the pattern listed in the file **package.list** for wanted product.
+This will store the source rpm package in the product name directory, ie: **SLE-15-SP6**. 
+This script grab the latest version of the package in the **update** channel and also initial package in **GA**.
 
 # Python module needed
 
-**python3-tqdm**, **python3-packaging**
+**python3-tqdm**
 
 ```bash
-zypper in python3-tqdm python3-packaging
+zypper in python3-tqdm
 ```
 
 # How to use it
@@ -45,7 +45,6 @@ product_names = SLE-15-SP7, SLE-15-SP6, SLE-15-SP4, SLE-15-SP3, SLE-15-SP2, SLE-
 ## package.list
 
 ```hyper-v
-kvm
 libcap-ng
 libcgroup1
 libguestfs
