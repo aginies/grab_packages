@@ -52,8 +52,7 @@ def get_latest_version(versions):
     return max(versions, key=lambda v: split_version(v))
 
 def get_build_tuple(package, url):
-    # Extract the build identifier part after 'qemu-7.1.0-' and before '.src'
-    build_str = url.split('qemu-7.1.0-')[-1].split('.src')[0]
+    build_str = url.split(package)[-1].split('.src')[0]
 
     # Split on non-digit characters (e.g., hyphens)
     parts = [part for part in build_str.replace('-', '').split('.') if part.isdigit()]
