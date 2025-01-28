@@ -87,7 +87,7 @@ def download_latest_version(product_packages, product_name, product_dir):
             #print("DEBUG", package)
             versions = details.get('versions', set())
             urls = details.get('urls', set())
-            print("DL", urls, versions)
+            #print("DL", urls, versions)
             #for url in urls:
             file_name = os.path.basename(urls)
             file_path = os.path.join(product_dir, file_name)
