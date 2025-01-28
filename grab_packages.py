@@ -118,6 +118,7 @@ def grab_files(config):
         # Read patterns from the packages_file
         with open(packages_file, 'r') as f:
             patterns = [line.strip() for line in f]
+        patterns = [line for line in patterns if line]  # Remove empty lines
 
         # Clear the screen at the beginning
         os.system('clear')
