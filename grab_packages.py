@@ -6,7 +6,6 @@ import urllib.request
 import re
 import configparser
 import os
-import threading
 from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
 
@@ -36,12 +35,12 @@ def download_file(file_url, file_path, thread_id):
 
             os.system('clear')
 
-    except urllib.error.HTTPError as e:
-        print(f"Thread {thread_id}: Error downloading {file_url}: {e.code} - {e.reason}")
-    except (KeyboardInterrupt, Exception) as e:
+    except urllib.error.HTTPError as err:
+        print(f"Thread {thread_id}: Error downloading {file_url}: {err.code} - {err.reason}")
+    except (KeyboardInterrupt, Exception) as err:
         print(f"Thread {thread_id}: Download interrupted. Attempting to save progress...")
         out_file.flush()
-        print(f"Thread {thread_id}: {type(e).__name__} occurred: {e}")
+        print(f"Thread {thread_id}: {type(err).__name__} occurred: {err}")
 
 
 def split_version(version):
@@ -59,15 +58,14 @@ def get_build_tuple(package, url):
 
     return tuple(map(int, parts))
 
-def find_latest_version(package_version, product_name, product_packages):
+def find_latest_version(package_version, product_packages):
     for package, details in package_version.items():
         versions = details.get('versions', set())
         urls = details.get('urls', set())
         #print(f"FLV {package}: {versions} {urls}")
         latest_version = get_latest_version(versions)
-        #print(f"FLV {product_name}: Latest version of {package} is {latest_version}")
         if package not in product_packages:
-            product_packages[package] = { 'versions': set(), 'urls': set() }
+            product_packages[package] = {'versions': set(), 'urls': set()}
 
         sorted_urls = sorted(urls, key=lambda x: get_build_tuple(package, x), reverse=True)
         latest_url = sorted_urls[0]
@@ -80,11 +78,11 @@ def find_latest_version(package_version, product_name, product_packages):
 def download_latest_version(product_packages, product_name, product_dir):
     # Create a ThreadPoolExecutor with a maximum of 5 worker threads
     with ThreadPoolExecutor(max_workers=5) as executor:
-        thread_id = 1  # Initialize thread ID counter
+        thread_id = 1
 
-        for package, details in product_packages.items():
+        for _, details in product_packages.items():
             #print("DEBUG", package)
-            versions = details.get('versions', set())
+            #versions = details.get('versions', set())
             urls = details.get('urls', set())
             #print("DL", urls, versions)
             #for url in urls:
@@ -109,14 +107,14 @@ def grab_files(config):
         # Read configuration
         server_url = config.get('server', 'url')
         paths_template = config.get('server', 'paths')
-        pathsSLFO_template = config.get('server', 'pathsSLFO')
+        paths_slfo_template = config.get('server', 'pathsSLFO')
         packages_file = config.get('files', 'packages')
         product_names = config.get('products', 'product_names').split(',')
         store_path = config.get('store', 'path')
 
         # Read patterns from the packages_file
-        with open(packages_file, 'r') as f:
-            patterns = [line.strip() for line in f]
+        with open(packages_file, 'r') as fil:
+            patterns = [line.strip() for line in fil]
         patterns = [line for line in patterns if line]  # Remove empty lines
 
         # Clear the screen at the beginning
@@ -127,7 +125,7 @@ def grab_files(config):
             print(f"Working on product: {product_name}")
             # Determine the correct path template based on product name
             if not re.match(r'SLE-1[2-5]-SP\d+', product_name):
-                paths_template = pathsSLFO_template
+                paths_template = paths_slfo_template
 
             # Create directory for the product
             product_dir = os.path.join(store_path, product_name)
@@ -153,7 +151,6 @@ def grab_files(config):
                     extra_part = ""
                     if links:
                         product_packages = {}
-                        latest_versions = {}  # Store latest versions of each package
                         for file_name in links:
                             # Remove everything after '<' if it exists
                             file_name = file_name.split('<')[0]
@@ -172,7 +169,7 @@ def grab_files(config):
                                         version_part = ''.join(parts[-2])
                                         extra_part = ''.join(parts[-1])
                                         if name_part not in package_version:
-                                            package_version[name_part] = { 'versions': set(), 'urls': set() }
+                                            package_version[name_part] = {'versions': set(), 'urls': set()}
 
                                         #print("DEBUG:", name_part)
                                         package_url = url+"/"+name_part+"-"+version_part+"-"+extra_part
@@ -181,22 +178,21 @@ def grab_files(config):
                                     else:
                                         print(f"Sounds like a BUG for {parts}")
 
-                        product_packages = find_latest_version(package_version, product_name, product_packages)
+                        product_packages = find_latest_version(package_version, product_packages)
                         #print(product_packages)
                         download_latest_version(product_packages, product_name, product_dir)
 
-                except urllib.error.HTTPError as e:
-                    if e.code == 404:
+                except urllib.error.HTTPError as err:
+                    if err.code == 404:
                         print(f"HTTP Error 404 for path {path}: Not Found")
                     else:
-                        print(f"HTTP Error for path {path}: {e.code} - {e.reason}")
-                        if hasattr(e, 'read'):
-                            print(e.read().decode('utf-8'))
+                        print(f"HTTP Error for path {path}: {err.code} - {err.reason}")
+                        if hasattr(err, 'read'):
+                            print(err.read().decode('utf-8'))
 
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    except Exception as err:
+        print(f"An error occurred: {err}")
 
-
-config = configparser.ConfigParser()
-config.read('config.ini')
-grab_files(config)
+CONFIG = configparser.ConfigParser()
+CONFIG.read('config.ini')
+grab_files(CONFIG)
