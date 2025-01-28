@@ -1,7 +1,8 @@
 # Goal
 
 Grab all **src.rpm** packages which match the pattern listed in the file **package.list** for each wanted product.
-This will store the package in the product name directory, ie: **SLE-15-SP6**.
+This will store the package in the product name directory, ie: **SLE-15-SP6**. This will grab the latest version 
+of the package in the **update** channel, and the initial package in **GA**.
 
 # Python module needed
 
