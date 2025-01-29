@@ -27,7 +27,7 @@ chmod 755 package_comparison.py
 ./package_comparison.py result packages.list
 ```
 
-![image](https://github.com/aginies/grab_packages/)
+![image](https://github.com/aginies/grab_packages/blob/c00d1620f6bdd47499a3ca0bb820685502528bb3/images/package_comparison.jpg)
 
 # Configuration
 
