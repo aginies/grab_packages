@@ -24,9 +24,10 @@ chmod 755 grab_packages.py
 
 ```bash
 chmod 755 package_comparison.py
-package_comparison.py result packages.list
+./package_comparison.py result packages.list
 ```
 
+![image](https://github.com/aginies/grab_packages/)
 
 # Configuration
 

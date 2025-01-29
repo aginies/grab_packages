@@ -114,9 +114,52 @@ def main():
 
     with open(result, 'w') as f:
         f.write(f"<html>\n<head><title>Package Comparison ({datetime.now().strftime('%Y/%m/%d %H:%M')})</title></head>\n")
-        f.write("<h1>SRPM Packages versions comparison</h1>\n")
+        f.write("<style>")
+        f.write("th.package-info, td.package-info { width: 250px; }")
+        f.write(".styled-table {\n")
+        f.write("border-collapse: collapse;\n")
+        f.write("margin: 25px 0;\n")
+        f.write("font-size: 0.9em;\n")
+        f.write("font-family: sans-serif;\n")
+        f.write("min-width: 400px;\n")
+        f.write("box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);\n")
+        f.write("}\n")
+        f.write(".styled-table thead tr {\n")
+        f.write("background-color: #009879;\n")
+        f.write("color: #ffffff;\n")
+        f.write("text-align: left;\n")
+        f.write("}\n")
+        f.write(".styled-table th,\n")
+        f.write(".styled-table td {\n")
+        f.write("padding: 12px 15px;\n")
+        f.write("}\n")
+        f.write(".styled-table tbody tr {\n")
+        f.write("border-bottom: 1px solid #dddddd;\n")
+        f.write("}\n")
+        f.write(".styled-table tbody tr:nth-of-type(even) {\n")
+        f.write("background-color: #f3f3f3;\n")
+        f.write("}\n")
+        f.write(".styled-table tbody tr:last-of-type {\n")
+        f.write("border-bottom: 2px solid #009879;\n")
+        f.write("}\n")
+        f.write(".styled-table tbody tr.active-row {\n")
+        f.write("font-weight: bold;\n")
+        f.write("color: #009879;\n")
+        f.write("}\n")
+        f.write("div{")
+        f.write("font-size: 2rem;")
+        f.write("text-align: left;")
+        f.write("height:5vh;")
+        f.write("line-height: 5vh;")
+        f.write("color: #fcedd8;")
+        f.write("background: green;")
+        f.write("font-family: 'Niconne', cursive;")
+        f.write("font-weight: 700;")
+        f.write("}")
+        f.write("</style>")
+        f.write("<div>SRPM Packages versions comparison</div>\n")
         f.write(f"<p>Based on src.rpm, diff done on {os.uname().machine}</p>\n")
-        f.write("<table border='1'>\n<tr><th></th>")
+        f.write("<table class='styled-table'>\n<tr><th class='package-info'></th>")
 
     for product in PRODUCTS:
         with open(result, 'a') as f:
@@ -140,7 +183,7 @@ def main():
             print(f"searching {package} | FOUND: {rpm_files}")
 
             with open(result, 'a') as f:
-                f.write("<td bgcolor='#e5e5e5'>")
+                f.write("<td class='package-info' bgcolor='#e5e5e5'>")
 
             # Get URL and summary using the first RPM file found
             if rpm_files:
