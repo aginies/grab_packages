@@ -1,10 +1,11 @@
 # Goal
 
-Grab all **src.rpm** packages which match the pattern listed in the file **package.list** for wanted product.
+**grab_packages.py** script download all **src.rpm** packages which match the pattern listed in the file **package.list** for wanted product.
 This will store the source rpm package in the product name directory, ie: **SLE-15-SP6**. 
-This script grab the latest version of the package in the **update** channel and also initial package in **GA**.
+This will download the latest version of the package in the **update** channel and also the initial package in **GA**.
+The **package_comparison.py** script creates a table to compare the package SRPM of all packages across product.
 
-# Python module needed
+# Python module needed (grab_packages.py)
 
 **python3-tqdm**
 
