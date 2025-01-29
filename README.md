@@ -9,22 +9,36 @@ This script grab the latest version of the package in the **update** channel and
 **python3-tqdm**
 
 ```bash
-zypper in python3-tqdm
+# zypper in python3-tqdm
 ```
 
 # How to use grab_packages.py
 
 ```bash
-chmod 755 grab_packages.py
-./grab_packages.py
+# chmod 755 grab_packages.py
+# ./grab_packages.py
 ```
 ![image](https://github.com/aginies/grab_packages/blob/298eb4d7c6916ce2030fa00aa79d5e4afa10d180/grab.jpg)
 
 # How to use package_comparison.py
 
 ```bash
-chmod 755 package_comparison.py
-./package_comparison.py result packages.list
+# chmod 755 package_comparison.py
+# ./package_comparison.py
+Purpose:
+This script compares SRPM versions of packages across multiple SUSE distributions.
+It generates an HTML report with links to changelog and RPM diffs.
+
+Usage:
+python3 package_compare.py <result_dir> <package_list>
+
+Arguments:
+- result_dir: Path where results will be stored
+- package_list: File containing list of packages to compare
+
+The script uses configuration from config.ini for product names and paths.
+
+# ./package_comparison.py result packages.list
 ```
 
 ![image](https://github.com/aginies/grab_packages/blob/c00d1620f6bdd47499a3ca0bb820685502528bb3/images/package_comparison.jpg)
