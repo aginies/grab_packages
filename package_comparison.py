@@ -230,7 +230,7 @@ def main():
                             #print("Package other product:", rpm_b)
 
                             if rpm_b and os.path.exists(rpm_b):
-                                diff_file = os.path.join(product_diff, f"chlog_{product}_{other_product}.html")
+                                diff_file = os.path.join(product_diff, f"chlog_{package}_{product}_{other_product}.html")
                                 diff_changelog(rpm_a, rpm_b, diff_file)
 
                                 if os.path.exists(diff_file):
@@ -238,7 +238,7 @@ def main():
                                         f.write(f"<br><a href='diffs/{os.path.basename(diff_file)}' style='color:green;><font size='2'>Chglog Diff {other_product}</font></a>")
                                         # Add RPM diff if applicable
                                         rpm_diff_cmd = "/home/aginies/devel/github/aginies/grab_packages/rpmdiff"
-                                        full_diff = os.path.join(product_diff, f"rpm_{product}_{other_product}.txt")
+                                        full_diff = os.path.join(product_diff, f"{package}_{product}_{other_product}.txt")
                                         if not os.path.exists(full_diff):
                                             subprocess.run(f"{rpm_diff_cmd} {rpm_a} {rpm_b} > {full_diff}", shell=True)
                                         f.write(f"<br><a href='diffs/{os.path.basename(full_diff)}' style='color:purple;><font size='2'>Diff {other_product}</font></a>")
