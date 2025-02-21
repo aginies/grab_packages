@@ -45,12 +45,21 @@ def get_packages(package_file):
     with open(package_file, 'r') as f:
         return [line.strip() for line in f if line.strip()]
 
-def find_rpm_files(package_name, store_path):
+def find_rpm_files2(package_name, store_path):
     rpm_files = []
     for root, _, files in os.walk(store_path):
         for file in files:
             if (file.endswith(f".{PACKAGE_EXTENSION}") and file.startswith(f"{package_name}-")):
                 rpm_files.append(os.path.join(root, file))
+    return rpm_files
+
+def find_rpm_files(package_name, store_path):
+    rpm_files = []
+    for product in PRODUCTS:
+        cmd = f"ls -t -1 {os.path.join(store_path, product)}/{package_name}*.src.rpm"
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        if result.returncode == 0 and result.stdout.strip():
+            rpm_files.append(result.stdout.strip().split('\n')[0])  # Get the latest version
     return rpm_files
 
 def get_product_rpm(product, store_path, rpm_files):
@@ -217,10 +226,10 @@ def main():
                     #print("Package current product: ", rpm_a)
 
                     if rpm_a and os.path.exists(rpm_a):
-                        name, version, release = rpm_info(rpm_a)
+                        nameA, versionA, releaseA = rpm_info(rpm_a)
 
                         with open(result, 'a') as f:
-                            f.write(f"<td align='center'><b>{version}</b>")
+                            f.write(f"<td align='center'><b>{versionA}-{releaseA}</b>")
 
                         for other_product in PRODUCTS:
                             if other_product == product:
@@ -230,21 +239,26 @@ def main():
                             #print("Package other product:", rpm_b)
 
                             if rpm_b and os.path.exists(rpm_b):
-                                diff_file = os.path.join(product_diff, f"chlog_{package}_{product}_{other_product}.html")
-                                diff_changelog(rpm_a, rpm_b, diff_file)
+                                nameB, versionB, releaseB = rpm_info(rpm_b)
+                                diff_file = os.path.join(product_diff, f"chlog_{product}_{nameA}_{versionA}-{releaseA}_VS_{other_product}_{nameB}_{versionB}-{releaseB}.html")
+                                if os.path.exists(diff_file):
+                                    print(f"{diff_file} already exist")
+                                else:
+                                    diff_changelog(rpm_a, rpm_b, diff_file)
 
                                 if os.path.exists(diff_file):
                                     with open(result, 'a') as f:
                                         f.write(f"<br><a href='diffs/{os.path.basename(diff_file)}' style='color:green;><font size='2'>Chglog Diff {other_product}</font></a>")
                                         # Add RPM diff if applicable
                                         rpm_diff_cmd = "/home/aginies/devel/github/aginies/grab_packages/rpmdiff"
-                                        full_diff = os.path.join(product_diff, f"{package}_{product}_{other_product}.txt")
+                                        full_diff = os.path.join(product_diff, f"rpmdiff_{product}_{nameA}_{versionA}-{releaseA}_VS_{other_product}_{nameB}_{versionB}-{releaseB}.txt")
                                         if not os.path.exists(full_diff):
                                             subprocess.run(f"{rpm_diff_cmd} {rpm_a} {rpm_b} > {full_diff}", shell=True)
                                         f.write(f"<br><a href='diffs/{os.path.basename(full_diff)}' style='color:purple;><font size='2'>Diff {other_product}</font></a>")
                                 else:
                                     with open(result, 'a') as f:
                                         f.write("<br><font color='red'>No changelog diff</font>")
+
                         with open(result, 'a') as f:
                             f.write("</td>\n")
                     else:
