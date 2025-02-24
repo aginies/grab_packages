@@ -26,3 +26,4 @@ virt-p2v
 xen
 yast2-vm
 virtiofsd
+kernel-source
