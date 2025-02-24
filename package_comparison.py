@@ -1,3 +1,4 @@
+#!/usr/bin/env python3.11
 import configparser
 import os
 import re
@@ -7,6 +8,7 @@ from datetime import datetime
 # Read config.ini
 config = configparser.ConfigParser()
 config.read('config.ini')
+rpm_diff_cmd = "/home/aginies/devel/github/aginies/grab_packages/rpmdiff"
 
 PRODUCTS = config['products']['product_names'].split(', ')
 STORE_PATH = config['store']['path']
@@ -42,8 +44,8 @@ The script uses configuration from config.ini for product names and paths.
     exit(1)
 
 def get_packages(package_file):
-    with open(package_file, 'r') as f:
-        return [line.strip() for line in f if line.strip()]
+    with open(package_file, 'r') as fil:
+        return [line.strip() for line in fil if line.strip()]
 
 def find_rpm_files2(package_name, store_path):
     rpm_files = []
@@ -60,6 +62,7 @@ def find_rpm_files(package_name, store_path):
         result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
         if result.returncode == 0 and result.stdout.strip():
             rpm_files.append(result.stdout.strip().split('\n')[0])  # Get the latest version
+
     return rpm_files
 
 def get_product_rpm(product, store_path, rpm_files):
@@ -167,6 +170,7 @@ def main():
         f.write("}")
         f.write("</style>")
         f.write("<div>SRPM Packages versions comparison</div>\n")
+        f.write(f"<p>{date_str}</p>")
         f.write(f"<p>Based on src.rpm, diff done on {os.uname().machine}</p>\n")
         f.write("<table class='styled-table'>\n<tr><th class='package-info'></th>")
 
@@ -249,8 +253,7 @@ def main():
                                 if os.path.exists(diff_file):
                                     with open(result, 'a') as f:
                                         f.write(f"<br><a href='diffs/{os.path.basename(diff_file)}' style='color:green;><font size='2'>Chglog Diff {other_product}</font></a>")
-                                        # Add RPM diff if applicable
-                                        rpm_diff_cmd = "/home/aginies/devel/github/aginies/grab_packages/rpmdiff"
+
                                         full_diff = os.path.join(product_diff, f"rpmdiff_{product}_{nameA}_{versionA}-{releaseA}_VS_{other_product}_{nameB}_{versionB}-{releaseB}.txt")
                                         if not os.path.exists(full_diff):
                                             subprocess.run(f"{rpm_diff_cmd} {rpm_a} {rpm_b} > {full_diff}", shell=True)
