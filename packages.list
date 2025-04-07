@@ -1,7 +1,7 @@
+libvirt
 hyper-v
 libcap-ng
 libguestfs
-libvirt
 libvirt-glib
 numactl
 open-vm-tools
@@ -24,6 +24,12 @@ virt-what
 virt-v2v
 virt-p2v
 xen
+sanlock
+sevctl
 yast2-vm
 virtiofsd
-kernel-source
+virt-bridge-setup
+kernel-source-6
+kernel-source-5
+kernel-source-4
+patterns-server

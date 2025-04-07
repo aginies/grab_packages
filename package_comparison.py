@@ -85,11 +85,14 @@ def diff_changelog(package_a, package_b, diff_file):
     tmpdir = "/tmp"
     temp_file = os.path.join(tmpdir, f'tmp-chlog-{os.getpid()}')
 
-    cmd = f"rpm -qp --changelog {package_a} > {temp_file} && rpm -qp --changelog {package_b} >> {temp_file}"
+    cmd = f"rpm -qp --changelog {package_a} > {temp_file} && rpm -qp --changelog {package_b} > {temp_file}b"
+    print(cmd)
+    subprocess.run(cmd, shell=True)
+    cmd = f"diff -sb {temp_file} {temp_file}b > {diff_file}"
     subprocess.run(cmd, shell=True)
 
     # Replace bugzilla, fate, jsc links
-    with open(temp_file, 'r') as f:
+    with open(diff_file, 'r') as f:
         lines = []
         for line in f:
             modified_line = line
@@ -106,7 +109,11 @@ def diff_changelog(package_a, package_b, diff_file):
         f.writelines(lines)
         f.write("</pre></html>")
 
-    os.remove(temp_file)
+    #os.remove(temp_file)
+    print(temp_file)
+    print(temp_file+"b")
+    print(diff_file)
+    #exit(1)
 
 def main():
     if len(sys.argv) != 3:
@@ -224,6 +231,7 @@ def main():
                 for product in PRODUCTS:
                     print(product)
                     rpm_a = None
+                    PRESENT = False
 
                     # Find RPM for the current product
                     rpm_a = get_product_rpm(product, STORE_PATH, rpm_files)
@@ -234,6 +242,7 @@ def main():
 
                         with open(result, 'a') as f:
                             f.write(f"<td align='center'><b>{versionA}-{releaseA}</b>")
+                            PRESENT = True
 
                         for other_product in PRODUCTS:
                             if other_product == product:
@@ -264,6 +273,7 @@ def main():
 
                         with open(result, 'a') as f:
                             f.write("</td>\n")
+
                     else:
                         with open(result, 'a') as f:
                             f.write("<td align='center'><font color='red'>Not present</font></td>\n")
