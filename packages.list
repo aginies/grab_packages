@@ -8,12 +8,15 @@ open-vm-tools
 perl-Sys-Virt
 qemu
 snpguest
+snphost
 spice
 spice-gtk
 spice-protocol
 spice-vdagent
 libguestfs
 vhostmd
+numa
+numa-preplace
 python3-libvirt-python
 kubevirt
 virt-manager

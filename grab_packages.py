@@ -107,7 +107,9 @@ def grab_files(config):
         # Read configuration
         server_url = config.get('server', 'url')
         paths_template = config.get('server', 'paths')
+        pathb_template = config.get('server', 'pathb')
         paths_slfo_template = config.get('server', 'pathsSLFO')
+        pathb_slfo_template = config.get('server', 'pathbSLFO')
         packages_file = config.get('files', 'packages')
         product_names = config.get('products', 'product_names').split(',')
         store_path = config.get('store', 'path')
@@ -126,6 +128,7 @@ def grab_files(config):
             # Determine the correct path template based on product name
             if not re.match(r'SLE-1[2-5]-SP\d+', product_name):
                 paths_template = paths_slfo_template
+                pathb_template = pathb_slfo_template
 
             # Create directory for the product
             product_dir = os.path.join(store_path, product_name)
@@ -133,10 +136,11 @@ def grab_files(config):
 
             # Generate paths dynamically using product names and the template
             paths = [p.strip().replace('{product_name}', product_name) for p in paths_template.split(',')]
+            pathb = [p.strip().replace('{product_name}', product_name) for p in pathb_template.split(',')]
 
             for path in paths:
                 url = f"{server_url}/{path}"
-                #print(f"Checking path: {url}")
+                print(f"Checking path: {url}")
                 try:
                     with urllib.request.urlopen(url, context=ssl.create_default_context()) as response:
                         html = response.read().decode('utf-8')
@@ -160,6 +164,7 @@ def grab_files(config):
                                 if pattern in file_name and file_name.endswith("src.rpm"):
                                     #print("DEBUG pattern match src.rpm", pattern)
                                     parts = file_name.split('-')
+                                    #print(parts)
                                     second_last_part = parts[-2]
                                     # Check if the last part is a number
                                     if parts and len(parts[-1]) > 0 and second_last_part[0].isdigit():
@@ -168,9 +173,10 @@ def grab_files(config):
                                         # The pre-last part is the version number
                                         version_part = ''.join(parts[-2])
                                         extra_part = ''.join(parts[-1])
+                                        if name_part != "pattern":
+                                            continue
                                         if name_part not in package_version:
                                             package_version[name_part] = {'versions': set(), 'urls': set()}
-
                                         #print("DEBUG:", name_part)
                                         package_url = url+"/"+name_part+"-"+version_part+"-"+extra_part
                                         package_version[name_part]['versions'].add(version_part)
